@@ -1,34 +1,88 @@
 import React from 'react';
-
-import DiaryCard from './DiaryCard';
-
 import Button from 'react-bootstrap/Button';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
+import DiaryEntryList from './DiaryEntryList';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './diary.css'
 
+import { useState, useEffect } from 'react';
+import { DiaryEntryModel } from './DiaryEntryModel';
+
 function ReadingDiary() {
+  const [diaryCards, setDiaryCards] = useState<DiaryEntryModel[]>([])
+
+  const testData: Array<DiaryEntryModel> = [
+    {
+      book: {
+        id: 1,
+        name:'Lord of the Rings: Two Towers',
+      },
+      author: 'JRR Tolken',
+      endDate: new Date(2023, 7, 20),
+      startDate: new Date(2023, 8, 45),
+      review: 'Good fantasy. Interesting world. Nice characters.',
+      numericalReview: 4,
+      finished: true
+    },
+    {
+      book: {
+        id: 1,
+        name: 'Kuolleet ja elävät',
+      },
+      author: 'Hannu Mäkelä',
+      endDate: new Date(2023, 9, 2),
+      startDate: new Date(2023, 9, 8),
+      review: 'Mielenkiintoinen kirja. Hauskasti rakennettu. Tyly tarina',
+      numericalReview: 3,
+      finished: true
+    }
+  ]
+
+  function SetTestData() {
+    setDiaryCards(testData);
+}
+
+  function HandleAddEntry() {
+      const newEntry = new DiaryEntryModel(
+        {
+          id: -1,
+          name: ''
+        },
+        '',
+        0,
+        '', 
+        new Date(),
+        new Date(),
+        true
+      )
+
+      setDiaryCards((prevList) => [...prevList, newEntry]);
+  }
+
+  const fetchUserData = () => {
+    fetch(process.env.REACT_APP_API_URL + "Diary/GetMock")
+      .then(response => response.json())
+      .then(data => {
+        setDiaryCards(data);
+      })
+      .catch(error => {
+        console.error("Error fetching data:", error);
+      });
+  }
+
+  useEffect(() => {
+    fetchUserData()
+  }, [])
+
   return (
     <div className='main'>
       <h1>Reading Diary</h1>
-      <Button className='mb-3 btn-light'>Add entry</Button>
+
+      <Button className='mb-3 btn-light' onClick={SetTestData}>Set test data</Button>
+      <Button className='mb-3 btn-light' onClick={HandleAddEntry}>Add entry</Button>
       
+      <DiaryEntryList diaryEntries={diaryCards} />
       
-      <Row xs={1} md={3} className="diary-entries">
-        {Array.from({ length: 4 }).map((_, idx) => (
-          <Col key={idx} className='mb-3'>
-            <DiaryCard
-              name={'Lord of the Rings: Two towers'}
-              author={'JRR Tolkien'}
-              reviewNumber={4}
-              review={'Good fantasy stuff. I\' write a longer review later. This time this will be short one'}
-              startDate={new Date(2023, 6, 29)}
-              endDate={new Date(2023, 7, 29)}
-            />
-          </Col>
-        ))}
-      </Row>
     </div>
   );
 }

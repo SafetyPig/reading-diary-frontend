@@ -1,3 +1,4 @@
+import React from 'react'
 import "./diary.css"
 
 interface StarsProps {
@@ -5,12 +6,17 @@ interface StarsProps {
 }
 
 function Stars({ numberOfStars }: StarsProps) {
-    return (
-        <div className="stars">
-            {Array.from({ length: numberOfStars }).map((_, idx) => (
-                <p>★</p>
-            ))}
-        
+    const validNumberOfStars = Math.min(5, Math.max(0, numberOfStars));
+
+    return (        
+        <div className="stars">            
+            {validNumberOfStars === 0 ? (
+                <p>&nbsp;</p>
+            ) : (
+                Array.from({ length: validNumberOfStars }).map((_, idx) => (
+                    <p key={idx}>★</p>
+                ))
+            )}
         </div>
     )
 }
