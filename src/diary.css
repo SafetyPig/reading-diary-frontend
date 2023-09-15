@@ -1,0 +1,32 @@
+.main{
+    background-color: #282c34;  
+    min-height: 100vh;
+    align-items: center;  
+    color: white;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+.diary-entries {
+    max-width: 75%;
+    background-color: #282c34 ;
+}
+
+.black-ground {    
+    background-color: #282c34 !important;
+}
+
+.stars {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.right-float {
+    float: right;    
+}
+
+.space {
+    margin-right: 0.2rem;
+}
