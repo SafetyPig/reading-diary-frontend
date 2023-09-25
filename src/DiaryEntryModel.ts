@@ -1,6 +1,7 @@
-import {LiteBook}from "./LiteBookModel"
+import {LiteBook}from "./liteBookModel"
 
 export class DiaryEntryModel {
+   id: number
    book: LiteBook
    author: string;
    numericalReview: number;
@@ -9,15 +10,14 @@ export class DiaryEntryModel {
    endDate: Date;
    finished: boolean;
 
-   constructor(book: LiteBook, author: string, numericalReview: number, review: string, startDate: Date, endDate: Date, finished: boolean) {
-      this.book = book
-      this.author = author
-      this.numericalReview = numericalReview
-      this.review = review
-      this.startDate = startDate
-      this.endDate = endDate
-      this.finished = finished
-   };
-
-   
+   constructor(id: number, book: LiteBook, author: string, numericalReview: number, review: string, startDate: Date, endDate: Date, finished: boolean) {
+      this.id = id;
+      this.book = book;
+      this.author = author;
+      this.numericalReview = numericalReview;
+      this.review = review;
+      this.startDate = startDate;
+      this.endDate = endDate;
+      this.finished = finished;
+   };   
 }

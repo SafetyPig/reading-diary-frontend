@@ -1,5 +1,5 @@
 import Card from 'react-bootstrap/Card';
-import Stars from './Stars';
+import Stars from './stars';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {
@@ -9,6 +9,10 @@ import {
 } from "react-bootstrap-icons";
 import { useState } from 'react';
 import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import DatePicker from "react-datepicker";
+
+import 'react-datepicker/dist/react-datepicker.css';
+
 
 interface DiaryCardProps {
     name: string;
@@ -17,17 +21,18 @@ interface DiaryCardProps {
     review: string;
     startDate: Date;
     endDate: Date;
+    onDeleteClicked: () => void
 }
 
 
-function DiaryCard({ name, author, reviewNumber, review, startDate, endDate }: DiaryCardProps) {
+function DiaryCard({ name, author, reviewNumber, review, startDate, endDate, onDeleteClicked }: DiaryCardProps) {
     const [isView, setView] = useState(true);
     const [stateName, setName] = useState(name)
     const [stateAuthor, setAuthor] = useState(author)
     const [stateReviewNumber, setReviewNumber] = useState(reviewNumber)
     const [stateReview, setReview] = useState(review)
-    const [stateStartDate, setStartDate] = useState(startDate)
-    const [stateEndDate, setEndDate] = useState(endDate)
+    const [stateStartDate, setStartDate] = useState<Date | null>(startDate)
+    const [stateEndDate, setEndDate] = useState<Date | null>(endDate)
 
     const toolTipAppearTime = 200
     const toolTipDisappearTime = 100
@@ -37,7 +42,11 @@ function DiaryCard({ name, author, reviewNumber, review, startDate, endDate }: D
     }
 
     function HandleSaveClicked() {
-        setView(true);
+        setView(true);        
+    }
+
+    const handleStarSelect = (newValue: number) => {
+        setReviewNumber(newValue);
     }
 
     if (isView) {
@@ -48,20 +57,19 @@ function DiaryCard({ name, author, reviewNumber, review, startDate, endDate }: D
 
                         <Card.Title>{stateName}</Card.Title>
                         <Card.Subtitle>{stateAuthor}</Card.Subtitle>
-                        <Stars numberOfStars={stateReviewNumber} />
+                        <Stars numberOfStars={stateReviewNumber} isView={isView} onStarClicked={handleStarSelect} />
                         <Card.Text>
                             {stateReview}
                         </Card.Text>
                         <Card.Text>
-                            Start date: {new Date(stateStartDate).toLocaleDateString()}
-
+                            Start date: {stateStartDate ? stateStartDate.toLocaleDateString() : ""}
                         </Card.Text>
                         <Card.Text>
-                            End date: {new Date(stateEndDate).toLocaleDateString()}
+                            End date: {stateEndDate ? stateEndDate.toLocaleDateString() : ""}
                         </Card.Text>
                         <div className='right-float'>
                             <Button className="btn btn-success space" onClick={HandleEditClicked}><Pencil size={24} /></Button>
-                            <Button className="btn btn-danger"><Trash2 size={24} /></Button>
+                            <Button className="btn btn-danger" onClick={onDeleteClicked}><Trash2 size={24} /></Button>
                         </div>
                     </Card.Body>
 
@@ -72,7 +80,7 @@ function DiaryCard({ name, author, reviewNumber, review, startDate, endDate }: D
     } else {
         return (
             <div>
-                <Card style={{ minWidth: '12rem' }}>
+                <Card style={{ minWidth: '14rem' }}>
                     <Card.Body>
                         <OverlayTrigger
                             placement='top'
@@ -97,7 +105,7 @@ function DiaryCard({ name, author, reviewNumber, review, startDate, endDate }: D
                             <input type="text" placeholder='Author' value={stateAuthor} className='editable-field' onChange={(event) => setAuthor(event.target.value)} />
                         </OverlayTrigger>
 
-                        <Stars numberOfStars={stateReviewNumber} />
+                        <Stars numberOfStars={stateReviewNumber} isView={isView} onStarClicked={handleStarSelect} />
                         <OverlayTrigger
                             placement='top'
                             delay={{ show: toolTipAppearTime, hide: toolTipDisappearTime }}
@@ -106,24 +114,24 @@ function DiaryCard({ name, author, reviewNumber, review, startDate, endDate }: D
                                     Review
                                 </Tooltip>
                             }
-                        >                            
-                            <input type="text" placeholder='Review' value={stateReview} className='editable-field' onChange={(event) => setReview(event.target.value)} />                            
+                        >
+                            <input type="text" placeholder='Review' value={stateReview} className='editable-field' onChange={(event) => setReview(event.target.value)} />
                         </OverlayTrigger>
                         <div className='stars'>
-                            <label className='mb-2'>
+                            <label className='mb-2' onClick={e => e.preventDefault()}>
                                 Start date:
-                                <input type="text" value={new Date(stateStartDate).toLocaleDateString()} className='editable-field'  />
+                                <DatePicker shouldCloseOnSelect={true} selected={stateStartDate} onChange={(value) => setStartDate(value)} />
                             </label>
                         </div>
                         <div className='stars'>
-                        <label className='mb-2'>
+                            <label className='mb-2' onClick={e => e.preventDefault()} >
                                 End date:
-                                <input type="text" value={new Date(stateEndDate).toLocaleDateString()} className='editable-field mb-2' />
-                            </label>                                                        
+                                <DatePicker shouldCloseOnSelect={true} selected={stateEndDate} onChange={(value) => setEndDate(value)} />
+                            </label>
                         </div>
                         <div className='right-float'>
                             <Button className="btn btn-success space" onClick={HandleSaveClicked}><Save2 size={24} /></Button>
-                            <Button className="btn btn-danger"><Trash2 size={24} /></Button>
+                            <Button className="btn btn-danger" onClick={onDeleteClicked}><Trash2 size={24} /></Button>
                         </div>
                     </Card.Body>
                 </Card>
