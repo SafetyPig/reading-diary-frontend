@@ -12,6 +12,7 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 
 import Modal from 'react-bootstrap/Modal';
+import { useAuth } from './authContext';
 
 const testData: Array<DiaryEntryModel> = [
   {
@@ -44,10 +45,11 @@ const testData: Array<DiaryEntryModel> = [
 
 
 function ReadingDiary() {
-  const [diaryCards, setDiaryCards] = useState<DiaryEntryModel[]>([])  
+  const [diaryCards, setDiaryCards] = useState<DiaryEntryModel[]>([])
   const [showDeleteDialog, setDeleteDialogShow] = useState(false);
   const [indexToDelete, setIndexToDelete] = useState(0);
   const handleClose = () => setDeleteDialogShow(false);
+  const { authState, signIn, signOut } = useAuth();
 
   function SetTestData() {
     setDiaryCards(testData);
@@ -76,8 +78,8 @@ function ReadingDiary() {
   }
 
   function handleDeleteConfirmed() {
-    const restOfCards : DiaryEntryModel[] = diaryCards.slice();
-    
+    const restOfCards: DiaryEntryModel[] = diaryCards.slice();
+
     restOfCards.splice(indexToDelete, 1)
 
     setDiaryCards(restOfCards)
@@ -94,49 +96,59 @@ function ReadingDiary() {
         console.error("Error fetching data:", error);
       });
   }
-  
+
 
   useEffect(() => {
     fetchDiaryEntries()
   }, [])
 
   return (
-    <div className='main'>
-      <h1>Reading Diary</h1>
 
-      <Button className='mb-3 btn-light' onClick={SetTestData}>Set test data</Button>
-      <Button className='mb-3 btn-light' onClick={handleAddEntry}>Add entry</Button>
-      
-      <Row xs={1} md={3} className="diary-entries">
-      {diaryCards.map((diaryEntry, idx) => (
-        <Col key={diaryEntry.id} className='mb-3'>
-          <DiaryCard
-            name={diaryEntry.book.name}
-            author={diaryEntry.author}
-            reviewNumber={diaryEntry.numericalReview}
-            review={diaryEntry.review}
-            startDate={new Date(diaryEntry.startDate)}
-            endDate={new Date(diaryEntry.endDate)}
-            onDeleteClicked={() => setIndexToDelete(idx)}
-          />
-        </Col>
-      ))}
-    </Row>
+    <div>
+      <h1>React App with Azure AD Authentication</h1>
+      {authState?.isAuthenticated ? (
+        <>
+          <div className='main'>
+            <h1>Reading Diary</h1>
 
-      <Modal show={showDeleteDialog} onHide={handleClose} animation={false}>
-        <Modal.Header closeButton>
-          <Modal.Title>Delete</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Are you sure you want to delete the entry?</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleDeleteConfirmed}>
-            Delete
-          </Button>
-        </Modal.Footer>
-      </Modal>
+            <Button className='mb-3 btn-light' onClick={SetTestData}>Set test data</Button>
+            <Button className='mb-3 btn-light' onClick={handleAddEntry}>Add entry</Button>
+
+            <Row xs={1} md={3} className="diary-entries">
+              {diaryCards.map((diaryEntry, idx) => (
+                <Col key={diaryEntry.id} className='mb-3'>
+                  <DiaryCard
+                    name={diaryEntry.book.name}
+                    author={diaryEntry.author}
+                    reviewNumber={diaryEntry.numericalReview}
+                    review={diaryEntry.review}
+                    startDate={new Date(diaryEntry.startDate)}
+                    endDate={new Date(diaryEntry.endDate)}
+                    onDeleteClicked={() => setIndexToDelete(idx)}
+                  />
+                </Col>
+              ))}
+            </Row>
+
+            <Modal show={showDeleteDialog} onHide={handleClose} animation={false}>
+              <Modal.Header closeButton>
+                <Modal.Title>Delete</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>Are you sure you want to delete the entry?</Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>
+                  Close
+                </Button>
+                <Button variant="primary" onClick={handleDeleteConfirmed}>
+                  Delete
+                </Button>
+              </Modal.Footer>
+            </Modal>
+          </div>
+        </>
+      ) : (
+        <button onClick={signIn}>Sign In</button>
+      )}
     </div>
   );
 }

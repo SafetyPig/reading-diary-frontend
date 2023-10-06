@@ -1,3 +1,5 @@
+import { Configuration, PopupRequest } from "@azure/msal-browser";
+
 export const b2cPolicies = {
     names: {
         signUpSignIn: "B2C_1_ReadingDiarySignUpSignIn"
@@ -17,7 +19,10 @@ export const msalConfig: Configuration = {
         authority: b2cPolicies.authorities.signUpSignIn.authority,
         knownAuthorities: [b2cPolicies.authorityDomain],
         redirectUri: '/',
-    }
+    },
+    cache: {
+        cacheLocation: 'localStorage'
+    },
 }
 
 export const protectedResources = {

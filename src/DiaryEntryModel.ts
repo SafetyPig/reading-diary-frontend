@@ -1,4 +1,4 @@
-import {LiteBook}from "./liteBookModel"
+import {LiteBook} from "./liteBookModel"
 
 export class DiaryEntryModel {
    id: number
