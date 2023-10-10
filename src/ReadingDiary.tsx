@@ -1,5 +1,6 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
+import Spinner from 'react-bootstrap/Spinner';
 import DiaryCard from './diaryCard';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -27,7 +28,8 @@ const testData: Array<DiaryEntryModel> = [
     startDate: new Date(2023, 8, 45),
     review: 'Good fantasy. Interesting world. Nice characters.',
     numericalReview: 4,
-    finished: true
+    finished: true,
+    isView: false
   },
   {
     id: 2,
@@ -40,7 +42,8 @@ const testData: Array<DiaryEntryModel> = [
     startDate: new Date(2023, 9, 8),
     review: 'Mielenkiintoinen kirja. Hauskasti rakennettu. Tyly tarina',
     numericalReview: 3,
-    finished: true
+    finished: true,
+    isView: false
   }
 ]
 
@@ -48,6 +51,7 @@ function ReadingDiary() {
   const [diaryCards, setDiaryCards] = useState<DiaryEntryModel[]>([])
   const [showDeleteDialog, setDeleteDialogShow] = useState(false);
   const [indexToDelete, setIndexToDelete] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
   const handleClose = () => setDeleteDialogShow(false);
   const { authState, signIn, signOut } = useAuth();
 
@@ -67,21 +71,23 @@ function ReadingDiary() {
       '',
       new Date(),
       new Date(),
+      true,
       true
     )
 
     setDiaryCards((prevList) => [...prevList, newEntry]);
   }
 
-  function handleDeleteClicked() {
-    setDeleteDialogShow(true)
+  function handleDeleteClicked(index: number) {
+    setIndexToDelete(index);
+    setDeleteDialogShow(true);
   }
 
   function handleDeleteConfirmed() {
     const restOfCards: DiaryEntryModel[] = diaryCards.slice();
 
     restOfCards.splice(indexToDelete, 1)
-
+    
     setDiaryCards(restOfCards)
     setDeleteDialogShow(false)
   }
@@ -93,11 +99,10 @@ function ReadingDiary() {
       await instance.initialize();
       await instance.handleRedirectPromise();
       const response = await instance.acquireTokenSilent({
-        scopes: ['https://piggycorp.onmicrosoft.com/reading-diary-api/reading-diary.read'], // Replace with your API's application ID
+        scopes: ['https://piggycorp.onmicrosoft.com/reading-diary-api/reading-diary.read']
       });
-
-      // Use response.accessToken in your API requests
-      return response.accessToken;
+      
+      return response.accessToken;      
     } catch (error) {
       console.error('Error acquiring token:', error);
       throw error;
@@ -114,12 +119,13 @@ function ReadingDiary() {
       },
     }).then(response => response.json())
       .then(data => {
+        setIsLoading(false);
         setDiaryCards(data);
       })
       .catch(error => {
         console.error("Error fetching data:", error);
       });;
-  }
+  }  
 
   useEffect(() => {
     if (authState?.isAuthenticated) {
@@ -137,21 +143,23 @@ function ReadingDiary() {
             <Button className='mb-3 space' onClick={SetTestData}>Set test data</Button>
             <Button className='mb-3 space' onClick={handleAddEntry}>Add entry</Button>
           </div>
+          {isLoading ?
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+            : 
           <Row xs={1} md={3} className="diary-entries">
             {diaryCards.map((diaryEntry, idx) => (
               <Col key={diaryEntry.id} className='mb-3'>
                 <DiaryCard
-                  name={diaryEntry.book.name}
-                  author={diaryEntry.author}
-                  reviewNumber={diaryEntry.numericalReview}
-                  review={diaryEntry.review}
-                  startDate={new Date(diaryEntry.startDate)}
-                  endDate={new Date(diaryEntry.endDate)}
-                  onDeleteClicked={() => setIndexToDelete(idx)}
+                  diaryDto={diaryEntry}
+                  onDeleteClicked={() => handleDeleteClicked(idx)}
+                  isViewInitialValue={diaryEntry.isView}
                 />
               </Col>
             ))}
           </Row>
+          }
           <Modal show={showDeleteDialog} onHide={handleClose} animation={false}>
             <Modal.Header closeButton>
               <Modal.Title>Delete</Modal.Title>

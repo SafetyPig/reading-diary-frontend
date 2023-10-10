@@ -9,8 +9,9 @@ export class DiaryEntryModel {
    startDate: Date;
    endDate: Date;
    finished: boolean;
+   isView: boolean;
 
-   constructor(id: number, book: LiteBook, author: string, numericalReview: number, review: string, startDate: Date, endDate: Date, finished: boolean) {
+   constructor(id: number, book: LiteBook, author: string, numericalReview: number, review: string, startDate: Date, endDate: Date, finished: boolean, isView: boolean) {
       this.id = id;
       this.book = book;
       this.author = author;
@@ -19,5 +20,6 @@ export class DiaryEntryModel {
       this.startDate = startDate;
       this.endDate = endDate;
       this.finished = finished;
+      this.isView = isView;
    };   
 }

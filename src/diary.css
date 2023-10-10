@@ -17,6 +17,12 @@
   background-color: #282c34 !important;
 }
 
+.dates {
+  display: flex;
+  flex-direction: row;
+  width: 100%;  
+}
+
 .stars {
   display: flex;
   flex-direction: row;
@@ -60,4 +66,5 @@
 .editable-field {
   border: 1px solid black;
   background-color: beige;
+  width: 90%;
 }

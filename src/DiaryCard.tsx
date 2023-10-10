@@ -12,27 +12,24 @@ import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DatePicker from "react-datepicker";
 
 import 'react-datepicker/dist/react-datepicker.css';
+import { DiaryEntryModel } from './diaryEntryModel';
 
 
 interface DiaryCardProps {
-    name: string;
-    author: string;
-    reviewNumber: number;
-    review: string;
-    startDate: Date;
-    endDate: Date;
-    onDeleteClicked: () => void
+    diaryDto: DiaryEntryModel
+    onDeleteClicked: () => void;
+    isViewInitialValue: boolean;
 }
 
 
-function DiaryCard({ name, author, reviewNumber, review, startDate, endDate, onDeleteClicked }: DiaryCardProps) {
-    const [isView, setView] = useState(true);
-    const [stateName, setName] = useState(name)
-    const [stateAuthor, setAuthor] = useState(author)
-    const [stateReviewNumber, setReviewNumber] = useState(reviewNumber)
-    const [stateReview, setReview] = useState(review)
-    const [stateStartDate, setStartDate] = useState<Date | null>(startDate)
-    const [stateEndDate, setEndDate] = useState<Date | null>(endDate)
+function DiaryCard({ diaryDto, onDeleteClicked, isViewInitialValue }: DiaryCardProps) {
+    const [isView, setView] = useState(!isViewInitialValue);
+    const [stateName, setName] = useState(diaryDto.book.name)
+    const [stateAuthor, setAuthor] = useState(diaryDto.author)
+    const [stateReviewNumber, setReviewNumber] = useState(diaryDto.numericalReview)
+    const [stateReview, setReview] = useState(diaryDto.review)
+    const [stateStartDate, setStartDate] = useState<Date | null>(new Date(diaryDto.startDate))
+    const [stateEndDate, setEndDate] = useState<Date | null>(new Date(diaryDto.endDate))
 
     const toolTipAppearTime = 200
     const toolTipDisappearTime = 100
@@ -42,7 +39,8 @@ function DiaryCard({ name, author, reviewNumber, review, startDate, endDate, onD
     }
 
     function HandleSaveClicked() {
-        setView(true);        
+        setView(true);
+        
     }
 
     const handleStarSelect = (newValue: number) => {
@@ -91,8 +89,9 @@ function DiaryCard({ name, author, reviewNumber, review, startDate, endDate, onD
                                 </Tooltip>
                             }
                         >
-                            <input placeholder='Book Title' type="text" value={stateName} className='editable-field mb-2' onChange={(event) => setName(event.target.value)} />
+                            <input placeholder='Book Title' type="text" value={stateName} className='editable-field space mb-1' onChange={(event) => setName(event.target.value)} />
                         </OverlayTrigger>
+                        <br></br>
                         <OverlayTrigger
                             placement='top'
                             delay={{ show: toolTipAppearTime, hide: toolTipDisappearTime }}
@@ -115,15 +114,15 @@ function DiaryCard({ name, author, reviewNumber, review, startDate, endDate, onD
                                 </Tooltip>
                             }
                         >
-                            <input type="text" placeholder='Review' value={stateReview} className='editable-field' onChange={(event) => setReview(event.target.value)} />
+                            <textarea placeholder='Review' value={stateReview} className='editable-field' onChange={(event) => setReview(event.target.value)} />
                         </OverlayTrigger>
-                        <div className='stars'>
+                        <div className='dates'>
                             <label className='mb-2' onClick={e => e.preventDefault()}>
                                 Start date:
                                 <DatePicker shouldCloseOnSelect={true} selected={stateStartDate} onChange={(value) => setStartDate(value)} />
                             </label>
                         </div>
-                        <div className='stars'>
+                        <div className='dates'>
                             <label className='mb-2' onClick={e => e.preventDefault()} >
                                 End date:
                                 <DatePicker shouldCloseOnSelect={true} selected={stateEndDate} onChange={(value) => setEndDate(value)} />
