@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, FC, ReactNode } from 'react';
 import { PublicClientApplication } from '@azure/msal-browser';
 import { msalConfig } from './authConfig';
+import { MsalProvider } from "@azure/msal-react";
 
 interface AuthContextType {
   authState: any;
@@ -11,44 +12,51 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
-    children: ReactNode;
-  }
-  
+  children: ReactNode;
+}
 
 const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
-    const [authState, setAuthState] = useState<any>(null);
-    const msalInstance = new PublicClientApplication(msalConfig);
+  const [authState, setAuthState] = useState<any>(null);
+  const msalInstance = new PublicClientApplication(msalConfig);
 
-    msalInstance.initialize();
+  msalInstance.initialize();
 
   useEffect(() => {
     const handleRedirect = async () => {
-      if (msalInstance.getActiveAccount()) {
+      await msalInstance.handleRedirectPromise();
+
+      if (msalInstance.getActiveAccount()) {        
         setAuthState({
           isAuthenticated: true,
           user: msalInstance.getActiveAccount(),
         });
       }
-    };
+    };  
 
     handleRedirect();
   }, []);
 
   const signIn = async () => {
     try {
-      await msalInstance.loginRedirect();
+      const user = msalInstance.getActiveAccount();      
+      if (user === null) {
+        await msalInstance.loginRedirect();
+      }
     } catch (error) {
       console.error('Error signing in:', error);
     }
-};
+  };
 
-  const signOut = () => {
-    msalInstance.logout();
+  const signOut = async () => {
+    await msalInstance.handleRedirectPromise();
+    msalInstance.logoutRedirect();
   };
 
   return (
     <AuthContext.Provider value={{ authState, signIn, signOut }}>
-      {children}
+      <MsalProvider instance={msalInstance}>
+        {children}
+      </MsalProvider>
     </AuthContext.Provider>
   );
 };
@@ -60,5 +68,6 @@ const useAuth = () => {
   }
   return context;
 };
+
 
 export { AuthProvider, useAuth };

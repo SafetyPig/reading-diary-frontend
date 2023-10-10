@@ -1,62 +1,63 @@
 .main {
-    background-color: #282c34;
-    min-height: 100vh;
-    align-items: center;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    overflow-x: hidden;
+  background-color: #282c34;
+  min-height: 100vh;
+  align-items: center;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
 }
 
 .diary-entries {
-    max-width: 75%;
-    background-color: #282c34;
+  max-width: 75%;
+  background-color: #282c34;
 }
 
 .black-ground {
-    background-color: #282c34 !important;
+  background-color: #282c34 !important;
 }
 
 .stars {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    color: yellowgreen;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  color: yellowgreen;
 }
 
 .star-toggle-button {
-    background-color: transparent !important;
-    border: none !important;
-    outline: none !important;
-    cursor: pointer !important;
-  }
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  cursor: pointer !important;
+}
   
-  .star-toggle-button.selected {
-    color: yellowgreen;
-  }
+.star-toggle-button.selected {
+  color: yellowgreen;
+}
   
-  .star-toggle-button::before {
-    content: '☆';
-    color: #ccc; 
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
+.star-toggle-button::before {
+  content: '☆';
+  color: #ccc; 
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
   
-  .star-toggle-button.selected::before {
-    content: '★';
-    color: yellowgreen;
-  }
+.star-toggle-button.selected::before {
+  content: '★';
+  color: yellowgreen;
+}
+
 .right-float {
-    float: right;
+  float: right;
 }
 
 .space {
-    margin-right: 0.2rem;
+  margin-right: 0.2rem;
 }
 
 .editable-field {
-    border: 1px solid black;
-    background-color: beige;
+  border: 1px solid black;
+  background-color: beige;
 }
