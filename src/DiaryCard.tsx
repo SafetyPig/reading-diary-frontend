@@ -25,7 +25,7 @@ interface DiaryCardProps {
 function DiaryCard({ diaryDto, onDeleteClicked, isViewInitialValue }: DiaryCardProps) {
     const [isView, setView] = useState(!isViewInitialValue);
     const [stateName, setName] = useState(diaryDto.book.name)
-    const [stateAuthor, setAuthor] = useState(diaryDto.author)
+    const [stateAuthor, setAuthor] = useState(diaryDto.book.authorName)
     const [stateReviewNumber, setReviewNumber] = useState(diaryDto.numericalReview)
     const [stateReview, setReview] = useState(diaryDto.review)
     const [stateStartDate, setStartDate] = useState<Date | null>(new Date(diaryDto.startDate))

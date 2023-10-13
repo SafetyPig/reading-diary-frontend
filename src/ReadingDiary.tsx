@@ -22,8 +22,9 @@ const testData: Array<DiaryEntryModel> = [
     book: {
       id: 1,
       name: 'Lord of the Rings: Two Towers',
-    },
-    author: 'JRR Tolken',
+      authorId: 2,
+      authorName: 'JRR Tolken',
+    },    
     endDate: new Date(2023, 7, 20),
     startDate: new Date(2023, 8, 45),
     review: 'Good fantasy. Interesting world. Nice characters.',
@@ -36,8 +37,9 @@ const testData: Array<DiaryEntryModel> = [
     book: {
       id: 1,
       name: 'Kuolleet ja elävät',
+      authorId: 2,
+      authorName: 'Hannu Mäkelä',
     },
-    author: 'Hannu Mäkelä',
     endDate: new Date(2023, 9, 2),
     startDate: new Date(2023, 9, 8),
     review: 'Mielenkiintoinen kirja. Hauskasti rakennettu. Tyly tarina',
@@ -64,9 +66,10 @@ function ReadingDiary() {
       -1,
       {
         id: -1,
-        name: ''
+        name: '',
+        authorId: -1,
+        authorName: ''
       },
-      '',
       0,
       '',
       new Date(),
