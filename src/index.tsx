@@ -34,7 +34,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <AuthProvider>
-      <ReadingDiary />
+        <ReadingDiary />
     </AuthProvider>
   </React.StrictMode>
 );

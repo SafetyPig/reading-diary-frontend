@@ -7,18 +7,18 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './diary.css'
 
 import { useState, useEffect } from 'react';
-import { DiaryEntryModel } from './diaryEntryModel';
+import { DiaryEntryDTO } from './diaryEntryDTO';
 
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 
 import Modal from 'react-bootstrap/Modal';
 import { useAuth } from './authContext';
-import { useMsal, AuthenticatedTemplate, UnauthenticatedTemplate } from "@azure/msal-react";
+import { AuthenticatedTemplate, UnauthenticatedTemplate } from "@azure/msal-react";
 
-const testData: Array<DiaryEntryModel> = [
+const testData: Array<DiaryEntryDTO> = [
   {
-    id: 1,
+    bookid: 1,
     book: {
       id: 1,
       name: 'Lord of the Rings: Two Towers',
@@ -33,7 +33,7 @@ const testData: Array<DiaryEntryModel> = [
     isView: false
   },
   {
-    id: 2,
+    bookid: 2,
     book: {
       id: 1,
       name: 'Kuolleet ja elävät',
@@ -50,7 +50,7 @@ const testData: Array<DiaryEntryModel> = [
 ]
 
 function ReadingDiary() {
-  const [diaryCards, setDiaryCards] = useState<DiaryEntryModel[]>([])
+  const [diaryCards, setDiaryCards] = useState<DiaryEntryDTO[]>([])
   const [showDeleteDialog, setDeleteDialogShow] = useState(false);
   const [indexToDelete, setIndexToDelete] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -62,7 +62,7 @@ function ReadingDiary() {
   }
 
   function handleAddEntry() {
-    const newEntry = new DiaryEntryModel(
+    const newEntry = new DiaryEntryDTO(
       -1,
       {
         id: -1,
@@ -87,7 +87,7 @@ function ReadingDiary() {
   }
 
   function handleDeleteConfirmed() {
-    const restOfCards: DiaryEntryModel[] = diaryCards.slice();
+    const restOfCards: DiaryEntryDTO[] = diaryCards.slice();
 
     restOfCards.splice(indexToDelete, 1)
     
@@ -95,35 +95,18 @@ function ReadingDiary() {
     setDeleteDialogShow(false)
   }
 
-  const { instance } = useMsal();
-
-  const acquireToken = async () => {
-    try {      
-      await instance.initialize();
-      await instance.handleRedirectPromise();
-      const response = await instance.acquireTokenSilent({
-        scopes: ['https://piggycorp.onmicrosoft.com/reading-diary-api/reading-diary.read']
-      });
-      
-      return response.accessToken;      
-    } catch (error) {
-      console.error('Error acquiring token:', error);
-      throw error;
-    }
-  };
-
   const fetchDiaryEntries = async () => {
-    const token = await acquireToken();
-
-    await fetch(process.env.REACT_APP_API_URL + "Diary/GetMock", {
+    const token = authState.token;
+    
+    await fetch(process.env.REACT_APP_API_URL + "Diary?id=1", {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
       },
     }).then(response => response.json())
       .then(data => {
-        setIsLoading(false);
-        setDiaryCards(data);
+        setIsLoading(false);        
+        data.diaryEntries ? setDiaryCards(data.diaryEntries) : setDiaryCards([]);        
       })
       .catch(error => {
         console.error("Error fetching data:", error);
@@ -150,18 +133,22 @@ function ReadingDiary() {
             <Spinner animation="border" role="status">
               <span className="visually-hidden">Loading...</span>
             </Spinner>
-            : 
-          <Row xs={1} md={3} className="diary-entries">
-            {diaryCards.map((diaryEntry, idx) => (
-              <Col key={diaryEntry.id} className='mb-3'>
-                <DiaryCard
-                  diaryDto={diaryEntry}
-                  onDeleteClicked={() => handleDeleteClicked(idx)}
-                  isViewInitialValue={diaryEntry.isView}
-                />
-              </Col>
-            ))}
-          </Row>
+            :
+            <Row xs={1} md={3} className="diary-entries">
+              {diaryCards ? (
+                diaryCards.map((diaryEntry, idx) => (
+                  <Col key={diaryEntry.bookid} className='mb-3'>
+                    <DiaryCard
+                      diaryEntryDto={diaryEntry}
+                      onDeleteClicked={() => handleDeleteClicked(idx)}
+                      isViewInitialValue={diaryEntry.isView}
+                    />
+                  </Col>
+                ))
+              ) : (
+                <p>No diary entries available</p>
+              )}
+            </Row>
           }
           <Modal show={showDeleteDialog} onHide={handleClose} animation={false}>
             <Modal.Header closeButton>

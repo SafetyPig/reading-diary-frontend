@@ -12,17 +12,19 @@ import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DatePicker from "react-datepicker";
 
 import 'react-datepicker/dist/react-datepicker.css';
-import { DiaryEntryModel } from './diaryEntryModel';
+import { DiaryEntryDTO } from './diaryEntryDTO';
+import { useAuth } from './authContext';
+import { DateOnly } from './dateOnly';
 
 
 interface DiaryCardProps {
-    diaryDto: DiaryEntryModel
+    diaryEntryDto: DiaryEntryDTO
     onDeleteClicked: () => void;
     isViewInitialValue: boolean;
 }
 
 
-function DiaryCard({ diaryDto, onDeleteClicked, isViewInitialValue }: DiaryCardProps) {
+function DiaryCard({ diaryEntryDto: diaryDto, onDeleteClicked, isViewInitialValue }: DiaryCardProps) {
     const [isView, setView] = useState(!isViewInitialValue);
     const [stateName, setName] = useState(diaryDto.book.name)
     const [stateAuthor, setAuthor] = useState(diaryDto.book.authorName)
@@ -30,6 +32,7 @@ function DiaryCard({ diaryDto, onDeleteClicked, isViewInitialValue }: DiaryCardP
     const [stateReview, setReview] = useState(diaryDto.review)
     const [stateStartDate, setStartDate] = useState<Date | null>(new Date(diaryDto.startDate))
     const [stateEndDate, setEndDate] = useState<Date | null>(new Date(diaryDto.endDate))
+    const { authState } = useAuth();
 
     const toolTipAppearTime = 200
     const toolTipDisappearTime = 100
@@ -38,9 +41,43 @@ function DiaryCard({ diaryDto, onDeleteClicked, isViewInitialValue }: DiaryCardP
         setView(false);
     }
 
-    function HandleSaveClicked() {
+
+    const AddOrUpdateEntry = async () => {
+        const token = authState.token;
+
+        // TODO: Ei toimi päivät. pitäisi olla 05 muodossa
+        const startDate = stateStartDate ? stateStartDate.getUTCFullYear() + '-' + (stateStartDate.getUTCMonth() + 1) + '-' + stateStartDate.getDay() : stateStartDate 
+        const endDate = stateEndDate ? stateEndDate.getUTCFullYear() + '-' + (stateEndDate.getUTCMonth() + 1) + '-' + stateEndDate.getDay() : stateEndDate
+
+        var modifiedEntry = {
+            id: diaryDto.bookid,
+            book: {
+                bookId: diaryDto.book.id,
+                name: stateName,
+                authorId: diaryDto.book.authorId,
+                authorName: stateAuthor,
+            },            
+            startDate: startDate,
+            endDate: endDate,
+            review: stateReview,
+            numericalReview: stateReviewNumber,
+            finished: true            
+        }
+
+        console.log(JSON.stringify(modifiedEntry));
+        await fetch(process.env.REACT_APP_API_URL + "Diary/AddOrUpdateDiaryEntry", {
+            method: 'POST',
+            body: JSON.stringify(modifiedEntry),
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+        });
+    }
+
+    async function HandleSaveClicked() {
+        await AddOrUpdateEntry()
         setView(true);
-        
     }
 
     const handleStarSelect = (newValue: number) => {

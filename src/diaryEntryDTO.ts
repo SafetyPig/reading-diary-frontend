@@ -1,7 +1,7 @@
 import {LiteBook} from "./liteBookModel"
 
-export class DiaryEntryModel {
-   id: number
+export class DiaryEntryDTO {
+   bookid: number
    book: LiteBook
    numericalReview: number;
    review: string;
@@ -10,8 +10,8 @@ export class DiaryEntryModel {
    finished: boolean;
    isView: boolean;
 
-   constructor(id: number, book: LiteBook, numericalReview: number, review: string, startDate: Date, endDate: Date, finished: boolean, isView: boolean) {
-      this.id = id;
+   constructor(bookid: number, book: LiteBook, numericalReview: number, review: string, startDate: Date, endDate: Date, finished: boolean, isView: boolean) {
+      this.bookid = bookid;
       this.book = book;
       this.numericalReview = numericalReview;
       this.review = review;
