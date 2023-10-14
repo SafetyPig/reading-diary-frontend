@@ -78,6 +78,7 @@ function ReadingDiary() {
       });;
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (authState?.isAuthenticated) {
       fetchDiaryEntries()

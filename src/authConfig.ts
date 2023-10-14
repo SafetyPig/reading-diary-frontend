@@ -1,4 +1,4 @@
-import { Configuration, PopupRequest } from "@azure/msal-browser";
+import { Configuration } from "@azure/msal-browser";
 
 export const b2cPolicies = {
     names: {
