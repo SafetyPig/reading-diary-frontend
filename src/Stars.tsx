@@ -2,7 +2,6 @@ import React from 'react'
 import "./diary.css"
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import { ToggleButtonGroup } from 'react-bootstrap';
-import { useState } from 'react';
 
 interface StarsProps {
     numberOfStars: number;

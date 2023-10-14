@@ -14,8 +14,7 @@ import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css';
 import { DiaryEntryDTO } from './diaryEntryDTO';
 import { useAuth } from './authContext';
-import { DateOnly } from './dateOnly';
-
+import { formatToDateOnly } from './utils';
 
 interface DiaryCardProps {
     diaryEntryDto: DiaryEntryDTO
@@ -26,7 +25,7 @@ interface DiaryCardProps {
 
 function DiaryCard({ diaryEntryDto: diaryDto, onDeleteClicked, isViewInitialValue }: DiaryCardProps) {
     const [isView, setView] = useState(!isViewInitialValue);
-    const [stateName, setName] = useState(diaryDto.book.name)
+    const [stateName, setName] = useState(diaryDto.book.title)
     const [stateAuthor, setAuthor] = useState(diaryDto.book.authorName)
     const [stateReviewNumber, setReviewNumber] = useState(diaryDto.numericalReview)
     const [stateReview, setReview] = useState(diaryDto.review)
@@ -41,19 +40,17 @@ function DiaryCard({ diaryEntryDto: diaryDto, onDeleteClicked, isViewInitialValu
         setView(false);
     }
 
-
     const AddOrUpdateEntry = async () => {
         const token = authState.token;
-
-        // TODO: Ei toimi päivät. pitäisi olla 05 muodossa
-        const startDate = stateStartDate ? stateStartDate.getUTCFullYear() + '-' + (stateStartDate.getUTCMonth() + 1) + '-' + stateStartDate.getDay() : stateStartDate 
-        const endDate = stateEndDate ? stateEndDate.getUTCFullYear() + '-' + (stateEndDate.getUTCMonth() + 1) + '-' + stateEndDate.getDay() : stateEndDate
+        
+        const startDate = stateStartDate ? formatToDateOnly(stateStartDate) : stateStartDate 
+        const endDate = stateEndDate ? formatToDateOnly(stateEndDate) : stateEndDate
 
         var modifiedEntry = {
-            id: diaryDto.bookid,
+            id: diaryDto.id,
             book: {
                 bookId: diaryDto.book.id,
-                name: stateName,
+                title: stateName,
                 authorId: diaryDto.book.authorId,
                 authorName: stateAuthor,
             },            
@@ -63,8 +60,7 @@ function DiaryCard({ diaryEntryDto: diaryDto, onDeleteClicked, isViewInitialValu
             numericalReview: stateReviewNumber,
             finished: true            
         }
-
-        console.log(JSON.stringify(modifiedEntry));
+        
         await fetch(process.env.REACT_APP_API_URL + "Diary/AddOrUpdateDiaryEntry", {
             method: 'POST',
             body: JSON.stringify(modifiedEntry),

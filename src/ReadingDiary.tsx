@@ -11,43 +11,12 @@ import { DiaryEntryDTO } from './diaryEntryDTO';
 
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import Dropdown from 'react-bootstrap/Dropdown';
+
 
 import Modal from 'react-bootstrap/Modal';
 import { useAuth } from './authContext';
 import { AuthenticatedTemplate, UnauthenticatedTemplate } from "@azure/msal-react";
-
-const testData: Array<DiaryEntryDTO> = [
-  {
-    bookid: 1,
-    book: {
-      id: 1,
-      name: 'Lord of the Rings: Two Towers',
-      authorId: 2,
-      authorName: 'JRR Tolken',
-    },    
-    endDate: new Date(2023, 7, 20),
-    startDate: new Date(2023, 8, 45),
-    review: 'Good fantasy. Interesting world. Nice characters.',
-    numericalReview: 4,
-    finished: true,
-    isView: false
-  },
-  {
-    bookid: 2,
-    book: {
-      id: 1,
-      name: 'Kuolleet ja elävät',
-      authorId: 2,
-      authorName: 'Hannu Mäkelä',
-    },
-    endDate: new Date(2023, 9, 2),
-    startDate: new Date(2023, 9, 8),
-    review: 'Mielenkiintoinen kirja. Hauskasti rakennettu. Tyly tarina',
-    numericalReview: 3,
-    finished: true,
-    isView: false
-  }
-]
 
 function ReadingDiary() {
   const [diaryCards, setDiaryCards] = useState<DiaryEntryDTO[]>([])
@@ -57,17 +26,13 @@ function ReadingDiary() {
   const handleClose = () => setDeleteDialogShow(false);
   const { authState, signIn, signOut } = useAuth();
 
-  function SetTestData() {
-    setDiaryCards(testData);
-  }
-
   function handleAddEntry() {
     const newEntry = new DiaryEntryDTO(
-      -1,
+      0,
       {
-        id: -1,
-        name: '',
-        authorId: -1,
+        id: 0,
+        title: '',
+        authorId: 0,
         authorName: ''
       },
       0,
@@ -90,14 +55,14 @@ function ReadingDiary() {
     const restOfCards: DiaryEntryDTO[] = diaryCards.slice();
 
     restOfCards.splice(indexToDelete, 1)
-    
+
     setDiaryCards(restOfCards)
     setDeleteDialogShow(false)
   }
 
   const fetchDiaryEntries = async () => {
     const token = authState.token;
-    
+
     await fetch(process.env.REACT_APP_API_URL + "Diary?id=1", {
       method: 'GET',
       headers: {
@@ -105,13 +70,13 @@ function ReadingDiary() {
       },
     }).then(response => response.json())
       .then(data => {
-        setIsLoading(false);        
-        data.diaryEntries ? setDiaryCards(data.diaryEntries) : setDiaryCards([]);        
+        setIsLoading(false);
+        data.diaryEntries ? setDiaryCards(data.diaryEntries) : setDiaryCards([]);
       })
       .catch(error => {
         console.error("Error fetching data:", error);
       });;
-  }  
+  }
 
   useEffect(() => {
     if (authState?.isAuthenticated) {
@@ -123,10 +88,16 @@ function ReadingDiary() {
     <div>
       <AuthenticatedTemplate>
         <div className='main'>
+          <Dropdown className='top-right-element'>
+            <Dropdown.Toggle id="dropdown-basic">
+              &#9776;
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item onClick={signOut}>Log out</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
           <h1>Reading Diary</h1>
           <div className='buttons'>
-            <Button className='mb-3 space' onClick={signOut}>Log out</Button>
-            <Button className='mb-3 space' onClick={SetTestData}>Set test data</Button>
             <Button className='mb-3 space' onClick={handleAddEntry}>Add entry</Button>
           </div>
           {isLoading ?
@@ -137,7 +108,7 @@ function ReadingDiary() {
             <Row xs={1} md={3} className="diary-entries">
               {diaryCards ? (
                 diaryCards.map((diaryEntry, idx) => (
-                  <Col key={diaryEntry.bookid} className='mb-3'>
+                  <Col key={diaryEntry.id} className='mb-3'>
                     <DiaryCard
                       diaryEntryDto={diaryEntry}
                       onDeleteClicked={() => handleDeleteClicked(idx)}

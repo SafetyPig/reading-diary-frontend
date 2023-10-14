@@ -68,3 +68,9 @@
   background-color: beige;
   width: 90%;
 }
+
+.top-right-element {
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+}
