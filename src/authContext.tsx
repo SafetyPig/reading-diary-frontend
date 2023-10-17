@@ -35,8 +35,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       throw error;
     }
   };
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  
   useEffect(() => {
     const handleRedirect = async () => {
       await msalInstance.handleRedirectPromise();

@@ -59,27 +59,26 @@ function ReadingDiary() {
     setDiaryCards(restOfCards)
     setDeleteDialogShow(false)
   }
-
-  const fetchDiaryEntries = async () => {
-    const token = authState.token;
-
-    await fetch(process.env.REACT_APP_API_URL + "Diary?id=1", {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    }).then(response => response.json())
-      .then(data => {
-        setIsLoading(false);
-        data.diaryEntries ? setDiaryCards(data.diaryEntries) : setDiaryCards([]);
-      })
-      .catch(error => {
-        console.error("Error fetching data:", error);
-      });;
-  }
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   useEffect(() => {
+    const fetchDiaryEntries = async () => {
+      const token = authState.token;
+  
+      await fetch(process.env.REACT_APP_API_URL + "Diary?id=1", {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      }).then(response => response.json())
+        .then(data => {
+          setIsLoading(false);
+          data.diaryEntries ? setDiaryCards(data.diaryEntries) : setDiaryCards([]);
+        })
+        .catch(error => {
+          console.error("Error fetching data:", error);
+        });;
+    }
+
     if (authState?.isAuthenticated) {
       fetchDiaryEntries()
     }
@@ -113,7 +112,7 @@ function ReadingDiary() {
                     <DiaryCard
                       diaryEntryDto={diaryEntry}
                       onDeleteClicked={() => handleDeleteClicked(idx)}
-                      isViewInitialValue={diaryEntry.isView}
+                      isViewInitialValue={diaryEntry.isView}                      
                     />
                   </Col>
                 ))
