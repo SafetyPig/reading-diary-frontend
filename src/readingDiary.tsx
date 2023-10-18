@@ -86,7 +86,7 @@ function ReadingDiary() {
 
   return (
     <div>
-      <AuthenticatedTemplate>
+      {/* <AuthenticatedTemplate> */}
         <div className='main'>
           <Dropdown className='top-right-element'>
             <Dropdown.Toggle id="dropdown-basic">
@@ -134,13 +134,13 @@ function ReadingDiary() {
             </Modal.Footer>
           </Modal>
         </div>
-      </AuthenticatedTemplate>
-      <UnauthenticatedTemplate>
+      {/* </AuthenticatedTemplate> */}
+      {/* <UnauthenticatedTemplate>
         <div className='main'>
           <h1>Reading Diary</h1>
           <Button onClick={signIn}>Login</Button>
         </div>
-      </UnauthenticatedTemplate>
+      </UnauthenticatedTemplate> */}
     </div>
   );
 }

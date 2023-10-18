@@ -16,9 +16,13 @@ interface AuthProviderProps {
 }
 
 const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
-  const [authState, setAuthState] = useState<any>(null);
+  const [authState, setAuthState] = useState<any>({
+    isAuthenticated: true,    
+    token: "The Most Fake Token"
+  });
 
   const msalInstance = useMemo(() => new PublicClientApplication(msalConfig), []);
+
 
   msalInstance.initialize();
 
