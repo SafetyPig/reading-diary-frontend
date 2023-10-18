@@ -2,11 +2,11 @@ import { Configuration } from "@azure/msal-browser";
 
 export const b2cPolicies = {
     names: {
-        signUpSignIn: "B2C_1_ReadingDiarySignUpSignIn"
+        signUpSignIn: "B2C_1_ReadingDiarySignIn"
     },
     authorities: {
         signUpSignIn: {
-            authority: "https://piggycorp.b2clogin.com/piggycorp.onmicrosoft.com/B2C_1_ReadingDiarySignUpSignIn",
+            authority: "https://piggycorp.b2clogin.com/piggycorp.onmicrosoft.com/B2C_1_ReadingDiarySignIn",
         }
     },
     authorityDomain: "piggycorp.b2clogin.com"
@@ -22,15 +22,5 @@ export const msalConfig: Configuration = {
     },
     cache: {
         cacheLocation: 'localStorage'
-    },
-}
-
-export const protectedResources = {
-    readingDiaryApi: {
-        endpoint: "http://localhost:5000/",
-        scopes: {
-            read: ["https://piggycorp.onmicrosoft.com/reading-diary-api/reading-diary.read"],
-            write: ["https://piggycorp.onmicrosoft.com/reading-diary-api/reading-diary.write"]
-        }
     }
 }

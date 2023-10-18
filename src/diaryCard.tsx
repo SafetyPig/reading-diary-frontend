@@ -1,5 +1,6 @@
 import Card from 'react-bootstrap/Card';
 import Stars from './stars';
+import Spinner from 'react-bootstrap/Spinner';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {
@@ -31,6 +32,8 @@ function DiaryCard({ diaryEntryDto: diaryDto, onDeleteClicked, isViewInitialValu
     const [stateReview, setReview] = useState(diaryDto.review)
     const [stateStartDate, setStartDate] = useState<Date | null>(new Date(diaryDto.startDate))
     const [stateEndDate, setEndDate] = useState<Date | null>(new Date(diaryDto.endDate))
+    const [isLoading, setLoading] = useState(false);
+
     const { authState } = useAuth();
 
     const toolTipAppearTime = 200
@@ -41,9 +44,10 @@ function DiaryCard({ diaryEntryDto: diaryDto, onDeleteClicked, isViewInitialValu
     }
 
     const AddOrUpdateEntry = async () => {
+        setLoading(true);
         const token = authState.token;
-        
-        const startDate = stateStartDate ? formatToDateOnly(stateStartDate) : stateStartDate 
+
+        const startDate = stateStartDate ? formatToDateOnly(stateStartDate) : stateStartDate
         const endDate = stateEndDate ? formatToDateOnly(stateEndDate) : stateEndDate
 
         var modifiedEntry = {
@@ -53,14 +57,16 @@ function DiaryCard({ diaryEntryDto: diaryDto, onDeleteClicked, isViewInitialValu
                 title: stateName,
                 authorId: diaryDto.book.authorId,
                 authorName: stateAuthor,
-            },            
+            },
             startDate: startDate,
             endDate: endDate,
             review: stateReview,
             numericalReview: stateReviewNumber,
-            finished: true            
+            finished: true
         }
-        
+
+        console.log(modifiedEntry);
+
         await fetch(process.env.REACT_APP_API_URL + "Diary/AddOrUpdateDiaryEntry", {
             method: 'POST',
             body: JSON.stringify(modifiedEntry),
@@ -68,7 +74,9 @@ function DiaryCard({ diaryEntryDto: diaryDto, onDeleteClicked, isViewInitialValu
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
-        });
+        }).then();
+
+        setLoading(false);
     }
 
     async function HandleSaveClicked() {
@@ -108,7 +116,19 @@ function DiaryCard({ diaryEntryDto: diaryDto, onDeleteClicked, isViewInitialValu
 
             </div>
         )
-    } else {
+    } else if (isLoading)
+        return (
+            <div>
+                <Card style={{ minWidth: '14rem' }}>
+                    <Card.Body>
+                        <Spinner animation="border" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                        </Spinner>
+                    </Card.Body>
+                </Card>
+            </div>
+        )
+    else {
         return (
             <div>
                 <Card style={{ minWidth: '14rem' }}>

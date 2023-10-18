@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, FC, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, FC, ReactNode, useMemo } from 'react';
 import { PublicClientApplication } from '@azure/msal-browser';
 import { msalConfig } from './authConfig';
 import { MsalProvider } from "@azure/msal-react";
@@ -17,49 +17,53 @@ interface AuthProviderProps {
 
 const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [authState, setAuthState] = useState<any>(null);
-  const msalInstance = new PublicClientApplication(msalConfig);
+
+  const msalInstance = useMemo(() => new PublicClientApplication(msalConfig), []);
 
   msalInstance.initialize();
 
-  const acquireToken = async () => {
-    try {      
+  useEffect(() => {
+    const acquireToken = async () => {
+      try {
+        await msalInstance.initialize();
+        await msalInstance.handleRedirectPromise();
+        const response = await msalInstance.acquireTokenSilent({
+          scopes: [
+            'https://piggycorp.onmicrosoft.com/reading-diary-api/reading-diary.read',
+            'https://piggycorp.onmicrosoft.com/reading-diary-api/reading-diary.write'
+          ]
+        });
+
+        return response.accessToken;
+      } catch (error) {
+        console.error('Error acquiring token:', error);
+        throw error;
+      }
+    };
+
+    const handleRedirect = async () => {
       await msalInstance.initialize();
       await msalInstance.handleRedirectPromise();
-      const response = await msalInstance.acquireTokenSilent({
-        scopes: ['https://piggycorp.onmicrosoft.com/reading-diary-api/reading-diary.read']
-      });
-      
-      return response.accessToken;      
-    } catch (error) {
-      console.error('Error acquiring token:', error);
-      throw error;
-    }
-  };
-  
-  useEffect(() => {
-    const handleRedirect = async () => {
-      await msalInstance.handleRedirectPromise();
 
-      if (msalInstance.getActiveAccount()) {        
+      if (msalInstance.getActiveAccount()) {
         setAuthState({
           isAuthenticated: true,
           user: msalInstance.getActiveAccount(),
           token: await acquireToken()
         });
       }
-    };  
+    };
 
     handleRedirect();
-  }, []);
+  }, [msalInstance]);
 
   const signIn = async () => {
     try {
-      const user = msalInstance.getActiveAccount();      
+      const user = msalInstance.getActiveAccount();
       if (user === null) {
-        await msalInstance.loginRedirect();
+        await msalInstance.loginPopup();
       }
-      
-      acquireToken()
+
     } catch (error) {
       console.error('Error signing in:', error);
     }

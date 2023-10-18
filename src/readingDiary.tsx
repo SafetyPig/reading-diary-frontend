@@ -43,7 +43,7 @@ function ReadingDiary() {
       true
     )
 
-    setDiaryCards((prevList) => [...prevList, newEntry]);
+    setDiaryCards((prevList) => [newEntry, ...prevList]);
   }
 
   function handleDeleteClicked(index: number) {
@@ -59,11 +59,11 @@ function ReadingDiary() {
     setDiaryCards(restOfCards)
     setDeleteDialogShow(false)
   }
-    
+
   useEffect(() => {
     const fetchDiaryEntries = async () => {
       const token = authState.token;
-  
+
       await fetch(process.env.REACT_APP_API_URL + "Diary?id=1", {
         method: 'GET',
         headers: {
@@ -106,19 +106,17 @@ function ReadingDiary() {
             </Spinner>
             :
             <Row xs={1} md={3} className="diary-entries">
-              {diaryCards ? (
+              {
                 diaryCards.map((diaryEntry, idx) => (
                   <Col key={diaryEntry.id} className='mb-3'>
                     <DiaryCard
                       diaryEntryDto={diaryEntry}
                       onDeleteClicked={() => handleDeleteClicked(idx)}
-                      isViewInitialValue={diaryEntry.isView}                      
+                      isViewInitialValue={diaryEntry.isView}
                     />
                   </Col>
                 ))
-              ) : (
-                <p>No diary entries available</p>
-              )}
+              }
             </Row>
           }
           <Modal show={showDeleteDialog} onHide={handleClose} animation={false}>
