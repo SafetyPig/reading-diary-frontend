@@ -61,7 +61,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     try {
       const user = msalInstance.getActiveAccount();
       if (user === null) {
-        await msalInstance.loginPopup();
+        await msalInstance.loginRedirect();
       }
 
     } catch (error) {
