@@ -20,7 +20,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       try {
         const token = await getAccessTokenSilently({
           authorizationParams: {
-            audience: 'https://localhost:7299/',
+            audience: process.env.REACT_APP_API_URL,
             scope: 'reading-diary.read',
           },
         });

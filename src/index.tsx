@@ -17,7 +17,7 @@ root.render(
       domain="dev-ydcxmmfaiie0fgyg.us.auth0.com"
       clientId="BPWuMQ7UNrisLwN0XSjO7fDrmnXEfzYc"
       authorizationParams={{
-        redirect_uri: "http://localhost:3000"
+        redirect_uri: process.env.REACT_APP_Redirect_URL
       }}
     >
       <AuthProvider>
