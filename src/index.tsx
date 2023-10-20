@@ -5,27 +5,7 @@ import ReadingDiary from './readingDiary';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { AuthProvider } from './authContext';
-
-
-// MSAL imports
-import { PublicClientApplication, EventType, EventMessage, AuthenticationResult } from "@azure/msal-browser";
-import { msalConfig } from "./authConfig";
-
-export const msalInstance = new PublicClientApplication(msalConfig);
-
-// Account selection logic is app dependent. Adjust as needed for different use cases.
-const accounts = msalInstance.getAllAccounts();
-if (accounts.length > 0) {
-    msalInstance.setActiveAccount(accounts[0]);
-}
-
-msalInstance.addEventCallback((event: EventMessage) => {
-    if (event.eventType === EventType.LOGIN_SUCCESS && event.payload) {
-        const payload = event.payload as AuthenticationResult;
-        const account = payload.account;
-        msalInstance.setActiveAccount(account);
-    }
-});
+import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -33,9 +13,17 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <React.StrictMode>
-    <AuthProvider>
+    <Auth0Provider
+      domain="dev-ydcxmmfaiie0fgyg.us.auth0.com"
+      clientId="BPWuMQ7UNrisLwN0XSjO7fDrmnXEfzYc"
+      authorizationParams={{
+        redirect_uri: "http://localhost:3000"
+      }}
+    >
+      <AuthProvider>
         <ReadingDiary />
-    </AuthProvider>
+      </AuthProvider>
+    </Auth0Provider>
   </React.StrictMode>
 );
 

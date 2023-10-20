@@ -14,8 +14,8 @@ import DatePicker from "react-datepicker";
 
 import 'react-datepicker/dist/react-datepicker.css';
 import { DiaryEntryDTO } from './diaryEntryDTO';
-import { useAuth } from './authContext';
 import { formatToDateOnly } from './utils';
+import { useAuth } from './authContext';
 
 interface DiaryCardProps {
     diaryEntryDto: DiaryEntryDTO
@@ -33,8 +33,7 @@ function DiaryCard({ diaryEntryDto: diaryDto, onDeleteClicked, isViewInitialValu
     const [stateStartDate, setStartDate] = useState<Date | null>(new Date(diaryDto.startDate))
     const [stateEndDate, setEndDate] = useState<Date | null>(new Date(diaryDto.endDate))
     const [isLoading, setLoading] = useState(false);
-
-    const { authState } = useAuth();
+    const { acquireToken } = useAuth();
 
     const toolTipAppearTime = 200
     const toolTipDisappearTime = 100
@@ -45,7 +44,6 @@ function DiaryCard({ diaryEntryDto: diaryDto, onDeleteClicked, isViewInitialValu
 
     const AddOrUpdateEntry = async () => {
         setLoading(true);
-        const token = authState.token;
 
         const startDate = stateStartDate ? formatToDateOnly(stateStartDate) : stateStartDate
         const endDate = stateEndDate ? formatToDateOnly(stateEndDate) : stateEndDate
@@ -65,13 +63,11 @@ function DiaryCard({ diaryEntryDto: diaryDto, onDeleteClicked, isViewInitialValu
             finished: true
         }
 
-        console.log(modifiedEntry);
-
         await fetch(process.env.REACT_APP_API_URL + "Diary/AddOrUpdateDiaryEntry", {
             method: 'POST',
             body: JSON.stringify(modifiedEntry),
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${await acquireToken()}`,
                 'Content-Type': 'application/json'
             },
         }).then();
