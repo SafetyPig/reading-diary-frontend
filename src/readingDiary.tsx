@@ -107,7 +107,7 @@ function ReadingDiary() {
                 &#9776;
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item onClick={() => logout({ logoutParams: { returnTo: "http://localhost:3000/" } })}>Log out</Dropdown.Item>
+                <Dropdown.Item onClick={() => logout({ logoutParams: { returnTo: process.env.REACT_APP_Redirect_URL } })}>Log out</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
             <h1>Reading Diary</h1>
