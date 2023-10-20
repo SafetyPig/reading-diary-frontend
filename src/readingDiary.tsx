@@ -23,7 +23,7 @@ function ReadingDiary() {
   const [indexToDelete, setIndexToDelete] = useState(0);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const handleClose = () => setDeleteDialogShow(false);
-  const { user, isAuthenticated, loginWithRedirect, logout, isLoading, getAccessTokenSilently } = useAuth0();
+  const { isAuthenticated, loginWithRedirect, logout, isLoading } = useAuth0();
   const { acquireToken } = useAuth();
 
   function handleAddEntry() {
@@ -80,7 +80,7 @@ function ReadingDiary() {
     if (isAuthenticated) {
       fetchDiaryEntries()
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, acquireToken])
 
   return (
     isLoading
